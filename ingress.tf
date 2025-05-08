@@ -6,6 +6,7 @@ resource "kubernetes_ingress_v1" "wordpress" {
     namespace = var.namespace
     annotations = {
       "nginx.ingress.kubernetes.io/rewrite-target" = "/$1"
+      "nginx.ingress.kubernetes.io/enable-opentelemetry" = "true"
     }
   }
 

@@ -13,6 +13,7 @@ Deploy application (wordpress) using terraform. Helm used where possible to simp
 
 
 ## Usage
+0. `terraform init`
 1. Fill `terraform.tfvars` with your values
 2. Run `terraform plan`
 3. Run `terraform apply`
@@ -24,6 +25,10 @@ And go to http://localhost:8000/
 
 ## Monitoring
 To access grafana endpoint:
-1. Run `kubectl -n monitoring port-forward service/kube-prometheus-stack-grafana 3000:3000`
-2. Get grafana password: `kubectl get secret --namespace monitoring kube-prometheus-stack-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo`
+1. Run `kubectl -n monitoring port-forward service/kube-prometheus-stack-grafana 3000:80`
+2. Get grafana password: `kubectl get secret --namespace monitoring loki-stack-grafana  -o jsonpath="{.data.admin-password}" | base64 --decode ; echo`
 3. Go to http://localhost:3000 (creds are: admin/<pass from step 2>)
+
+To access prometheus enfpoint:
+1. Run `kubectl -n monitoring port-forward service/kube-prometheus-stack-prometheus 3001:9090`
+2. Go to http://localhost:3001 

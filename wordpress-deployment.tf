@@ -1,3 +1,14 @@
+resource "kubernetes_namespace" "wordpress-namespace" {
+  metadata {
+    name = var.namespace
+  }
+}
+
+resource "kubernetes_namespace" "monitor-namespace" {
+  metadata {
+    name = var.monitor_namespace
+  }
+}
 
 resource "kubernetes_persistent_volume" "wordpress_pv" {
   metadata {

@@ -1,0 +1,17 @@
+
+controller:
+  metrics:
+    port: 10254
+    portName: metrics
+    # if this port is changed, change healthz-port: in extraArgs: accordingly
+    enabled: true
+    service:
+      annotations: 
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "10254"
+#  podAnnotations:
+#    prometheus.io/scrape: "true"
+#    prometheus.io/port: "10254"
+
+  opentelemetry:
+    enabled: true
