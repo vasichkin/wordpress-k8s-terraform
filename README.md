@@ -3,9 +3,10 @@ Pet project
 
 ## Prerequisites
 Kubernetes as platform (docker-desktop, minikube, eks, etc)
+Tested on kubernetes, installed by this project: https://github.com/vasichkin/kubernetes-terraform-ansible
 
 ## Infrastructure
-TODO
+Kubernetes 
 
 ## Task
 Deploy application (wordpress) using terraform. Helm used where possible to simplify operations
@@ -13,6 +14,7 @@ Deploy application (wordpress) using terraform. Helm used where possible to simp
 
 
 ## Usage
+-1. Copy kubernetes access file to kubeconfig/config
 0. `terraform init`
 1. Fill `terraform.tfvars` with your values
 2. Run `terraform plan`
@@ -20,8 +22,11 @@ Deploy application (wordpress) using terraform. Helm used where possible to simp
 4. Infra should be up and running
 To access wordpress, run:
   `kubectl -n wordpress port-forward service/wordpress-service 8000:80`
+  And go to http://localhost:8000/
+OR 
+  <cluster_public_ip>:30080
 
-And go to http://localhost:8000/
+Perform wordpress installation and setup. Set site url to your domain, pointed to <cluster_public_ip>. Now your wordpress should be accessible via domain.
 
 ## Monitoring
 To access grafana endpoint:
@@ -32,3 +37,10 @@ To access grafana endpoint:
 To access prometheus enfpoint:
 1. Run `kubectl -n monitoring port-forward service/kube-prometheus-stack-prometheus 3001:9090`
 2. Go to http://localhost:3001 
+
+
+
+
+
+TODO:
+Add ability to use AWS loadbalacer (not built-in, but manual setup)

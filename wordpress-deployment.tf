@@ -10,56 +10,16 @@ resource "kubernetes_namespace" "monitor-namespace" {
   }
 }
 
-resource "kubernetes_persistent_volume" "wordpress_pv" {
-  metadata {
-    name      = "wordpress-pv"
-  }
-
-  spec {
-    capacity = {
-      storage = var.wordpress_storage
-    }
-
-    access_modes = ["ReadWriteOnce"]
-
-    persistent_volume_reclaim_policy = "Retain"
-    storage_class_name                = "manual"
-
-    persistent_volume_source {
-      host_path {
-        path = var.wordpress_host_path
-      }
-    }
-  }
-}
-
-resource "kubernetes_persistent_volume_claim" "wordpress_pvc" {
-  metadata {
-    name      = "wordpress-pvc"
-    namespace = var.namespace
-  }
-
-  spec {
-    access_modes = ["ReadWriteOnce"]
-
-    resources {
-      requests = {
-        storage = var.wordpress_storage
-      }
-    }
-
-    storage_class_name = "manual"
-  }
-}
-
 resource "kubernetes_deployment" "wordpress" {
+  depends_on = [kubernetes_namespace.wordpress-namespace, kubernetes_service.mysql_service, kubernetes_persistent_volume_claim.wordpress_pvc]
+
   metadata {
     name      = "wordpress"
     namespace = var.namespace
   }
 
   spec {
-    replicas = 2
+    replicas = 1
 
     selector {
       match_labels = {
@@ -113,6 +73,15 @@ resource "kubernetes_deployment" "wordpress" {
             name  = "WORDPRESS_DB_NAME"
             value = "mysql"
           }
+
+          env {
+            name  = "WORDPRESS_SITE_URL"
+            value = var.wordpress_domain_name
+          }
+          env {
+            name  = "WORDPRESS_HOME"
+            value = var.wordpress_domain_name
+          }
         }
 
         volume {
@@ -128,6 +97,7 @@ resource "kubernetes_deployment" "wordpress" {
 }
 
 resource "kubernetes_service" "wordpress_service" {
+  depends_on = [kubernetes_deployment.wordpress]
   metadata {
     name      = "wordpress-service"
     namespace = var.namespace
@@ -145,7 +115,7 @@ resource "kubernetes_service" "wordpress_service" {
       protocol   = "TCP"
       port       = 80
       target_port = 80
-      node_port  = 30007
+      node_port  = 30080
     }
   }
 }

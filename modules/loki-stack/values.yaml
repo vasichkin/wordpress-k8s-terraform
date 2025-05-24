@@ -30,16 +30,16 @@ grafana:
           url: http://loki-stack-prometheus-server.monitoring.svc:9090
           access: proxy
           isDefault: true
-        - name: Tempo
-          type: tempo
-          access: proxy
-          orgId: 1
-          url: http://tempo:3100
-          basicAuth: false
-          version: 1
-          editable: false
-          apiVersion: 1
-          uid: tempo
+        # - name: Tempo
+        #   type: tempo
+        #   access: proxy
+        #   orgId: 1
+        #   url: http://tempo:3100
+        #   basicAuth: false
+        #   version: 1
+        #   editable: false
+        #   apiVersion: 1
+        #   uid: tempo
 
 loki:
   enabled: true
@@ -57,74 +57,74 @@ prometheus:
     retention: "100d"
     retentionSize: "120GB"
 
-  extraScrapeConfigs: |
-    - job_name: 'opentelemetry-collector'
-      static_configs:
-      - targets:
-        - opentelemetry-collector.monitoring.svc:9090
-      metrics_path: /metrics
-      scheme: http
+  # extraScrapeConfigs: |
+  #   - job_name: 'opentelemetry-collector'
+  #     static_configs:
+  #     - targets:
+  #       - opentelemetry-collector.monitoring.svc:9090
+  #     metrics_path: /metrics
+  #     scheme: http
 
   prometheus-node-exporter:
     hostRootFsMount:
       enabled: false
 
 
-prometheus_remove:
-  enabled: true
-  server:
-    extraFlags:
-      - "enable-feature=exemplar-storage"
-      - "enable-feature=otlp-write-receiver"
-    global:
-      scrape_interval: 10s
-      scrape_timeout: 3s
-      evaluation_interval: 1m
-      additionalScrapeConfigs:
-        - job_name: 'kubernetes-pods'
-          kubernetes_sd_configs:
-            - role: pod
-          relabel_configs:
-            - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-              action: keep
-              regex: true
-        - job_name: 'ingress-nginx-endpoints'
-          kubernetes_sd_configs:
-          - role: pod
-            namespaces:
-              names:
-              - ingress-nginx
-          relabel_configs:
-          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-            action: keep
-            regex: true
-          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
-            action: replace
-            target_label: __scheme__
-            regex: (https?)
-          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-            action: replace
-            target_label: __metrics_path__
-            regex: (.+)
-          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-            action: replace
-            target_label: __address__
-            regex: ([^:]+)(?::\d+)?;(\d+)
-            replacement: $1:$2
-          - source_labels: [__meta_kubernetes_service_name]
-            regex: prometheus-server
-            action: drop
+# prometheus_remove:
+#   enabled: true
+#   server:
+#     extraFlags:
+#       - "enable-feature=exemplar-storage"
+#       - "enable-feature=otlp-write-receiver"
+#     global:
+#       scrape_interval: 10s
+#       scrape_timeout: 3s
+#       evaluation_interval: 1m
+#       additionalScrapeConfigs:
+#         - job_name: 'kubernetes-pods'
+#           kubernetes_sd_configs:
+#             - role: pod
+#           relabel_configs:
+#             - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+#               action: keep
+#               regex: true
+#         - job_name: 'ingress-nginx-endpoints'
+#           kubernetes_sd_configs:
+#           - role: pod
+#             namespaces:
+#               names:
+#               - ingress-nginx
+#           relabel_configs:
+#           - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+#             action: keep
+#             regex: true
+#           - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
+#             action: replace
+#             target_label: __scheme__
+#             regex: (https?)
+#           - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+#             action: replace
+#             target_label: __metrics_path__
+#             regex: (.+)
+#           - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+#             action: replace
+#             target_label: __address__
+#             regex: ([^:]+)(?::\d+)?;(\d+)
+#             replacement: $1:$2
+#           - source_labels: [__meta_kubernetes_service_name]
+#             regex: prometheus-server
+#             action: drop
 
-        - job_name: 'otel-collector'
-          honor_labels: true
-          kubernetes_sd_configs:
-            - role: pod
-              namespaces:
-                own_namespace: true
-          relabel_configs:
-            - source_labels: [__meta_kubernetes_pod_annotation_opentelemetry_community_demo]
-              action: keep
-              regex: true
+#         - job_name: 'otel-collector'
+#           honor_labels: true
+#           kubernetes_sd_configs:
+#             - role: pod
+#               namespaces:
+#                 own_namespace: true
+#           relabel_configs:
+#             - source_labels: [__meta_kubernetes_pod_annotation_opentelemetry_community_demo]
+#               action: keep
+#               regex: true
 
 
 
