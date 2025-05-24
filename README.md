@@ -43,4 +43,7 @@ To access prometheus enfpoint:
 
 
 TODO:
-Add ability to use AWS loadbalacer (not built-in, but manual setup)
+- Add ability to use AWS loadbalacer (not built-in, but manual setup)
+- Monitoring: Prometheus. You have to collect metrics from an application like access_log, health status, requests per second. 
+- Also metrics from a cluster is needed
+- CI/CD. IAC tools and application deployment have to be run from CI/CD of you choice, e.g. Gitlab, Jenkins etc

@@ -11,7 +11,7 @@ resource "kubernetes_namespace" "monitor-namespace" {
 }
 
 resource "kubernetes_deployment" "wordpress" {
-  depends_on = [kubernetes_namespace.wordpress-namespace, kubernetes_service.mysql_service, kubernetes_persistent_volume_claim.wordpress_pvc]
+  depends_on = [kubernetes_namespace.wordpress-namespace, kubernetes_service.mysql_service]
 
   metadata {
     name      = "wordpress"

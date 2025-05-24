@@ -20,6 +20,10 @@ variable "aws_region" {
   type   = string
 }
 
+variable "aws_region_zone" {
+  type   = string
+}
+
 variable "wordpress_storage" {
   description = "Storage capacity for the persistent volume"
 }
@@ -53,11 +57,11 @@ module "ingress-nginx" {
   nginx-version = "4.12.2"
 }
 
-#module "aws-ebs-csi-driver" {
-#  source = "./modules/aws-ebs-csi-driver"
-#  aws_tags = var.aws_tags
-#  aws_region = "${var.aws_region}"
-#}
+module "aws-ebs-csi-driver" {
+  source = "./modules/aws-ebs-csi-driver"
+  aws_tags = var.aws_tags
+  aws_region = "${var.aws_region}"
+}
 
 #module "loki-stack" {
 #  source = "./modules/loki-stack"
