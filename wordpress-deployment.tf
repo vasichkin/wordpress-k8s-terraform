@@ -32,8 +32,12 @@ resource "kubernetes_deployment" "wordpress" {
         labels = {
           app = "wordpress"
         }
+        annotations = {
+          "prometheus.io/scrape" = "true"
+          "prometheus.io/port"   = "9253"
+          "prometheus.io/path"   = "/metrics"
+        }
       }
-
       spec {
         container {
           name  = "wordpress"
@@ -44,11 +48,17 @@ resource "kubernetes_deployment" "wordpress" {
             name           = "wordpress"
           }
 
+
           volume_mount {
             name       = "wordpress-data"
             mount_path = "/var/www/html"
           }
-
+          
+          volume_mount {
+            name       = "php-config"
+            mount_path = "/usr/local/etc/php-fpm.d/www.conf"
+            sub_path   = "www.conf"
+          }
           env {
             name  = "WORDPRESS_DB_HOST"
             value = "mysql-service.${var.namespace}.svc.cluster.local"
@@ -84,6 +94,20 @@ resource "kubernetes_deployment" "wordpress" {
           }
         }
 
+        container {
+          name  = "php-fpm-exporter"
+          image = "hipages/php-fpm_exporter:latest"
+
+          args = [
+            "--phpfpm.scrape-uri=tcp://127.0.0.1:9000/status"
+          ]
+
+          port {
+            name           = "metrics"
+            container_port = 9253
+          }
+        }
+
         volume {
           name = "wordpress-data"
 
@@ -91,8 +115,38 @@ resource "kubernetes_deployment" "wordpress" {
             claim_name = kubernetes_persistent_volume_claim.wordpress_pvc.metadata[0].name
           }
         }
+        volume {
+          name = "php-config"
+
+          config_map {
+            name = kubernetes_config_map.php_fpm_config.metadata[0].name
+          }
+        }
       }
     }
+  }
+}
+
+
+resource "kubernetes_config_map" "php_fpm_config" {
+  metadata {
+    name      = "php-fpm-config"
+    namespace = var.namespace
+  }
+
+  data = {
+    "www.conf" = <<-EOT
+      [www]
+      user = www-data
+      group = www-data
+      listen = 127.0.0.1:9000
+      pm = dynamic
+      pm.status_path = /status
+      pm.max_children = 5
+      pm.start_servers = 2
+      pm.min_spare_servers = 1
+      pm.max_spare_servers = 3
+    EOT
   }
 }
 

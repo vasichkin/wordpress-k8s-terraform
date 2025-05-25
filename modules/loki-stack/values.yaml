@@ -21,15 +21,15 @@ grafana:
     GF_AUTH_ANONYMOUS_ORG_ROLE: 'Admin'
     GF_AUTH_DISABLE_LOGIN_FORM: true
 
-  datasources:
-    datasources.yaml:
-      apiVersion: 1
-      datasources:
-        - name: Prometheus
-          type: prometheus
-          url: http://loki-stack-prometheus-server.monitoring.svc:9090
-          access: proxy
-          isDefault: true
+#  datasources:
+#    datasources.yaml:
+#      apiVersion: 1
+#      datasources:
+#        - name: Prometheus
+#          type: prometheus
+#          url: http://loki-stack-prometheus-server.monitoring.svc:9090
+#          access: proxy
+          # isDefault: true
         # - name: Tempo
         #   type: tempo
         #   access: proxy

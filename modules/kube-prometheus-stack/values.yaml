@@ -1,0 +1,85 @@
+
+grafana:
+  enabled: true
+  plugins: 
+    - jdbranham-diagram-panel
+    - grafana-polystat-panel
+    - vonage-status-panel
+    - flant-statusmap-panel
+    - heywesty-trafficlight-panel
+    - serrrios-statusoverview-panel
+
+  grafana.ini:
+    server:
+      cookie_secure: true
+      cookie_samesite: none
+      disable_brute_force_login_protection: true
+      disable_login_attempts_validation: true
+
+  env:
+    GF_AUTH_ANONYMOUS_ENABLED: true
+    GF_AUTH_ANONYMOUS_ORG_ROLE: 'Admin'
+    GF_AUTH_DISABLE_LOGIN_FORM: false
+
+#  datasources:
+#    datasources.yaml:
+#      apiVersion: 1
+#      datasources:
+#        - name: Prometheus
+#          type: prometheus
+#          url: http://loki-stack-prometheus-server.monitoring.svc:9090
+#          access: proxy
+          # isDefault: true
+
+
+loki:
+  enabled: true
+
+alertmanager:
+  enabled: true
+
+
+prometheus:
+  enabled: true
+  server:
+    global:
+      scrape_interval: 30s
+      scrape_timeout: 15s
+      evaluation_interval: 1m
+    retention: "100d"
+    retentionSize: "120GB"
+
+  prometheus-node-exporter:
+    hostRootFsMount:
+      enabled: false
+
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    retention: 10d
+    scrapeInterval: 30s
+    evaluationInterval: 30s
+    logLevel: info
+
+    additionalScrapeConfigs:
+      - job_name: 'annotation-based-scrape'
+        honor_labels: true
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: true
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            regex: (.+):(?:\d+);(\d+)
+            replacement: $1:$2
+            target_label: __address__
+
+    logLevel: info
+
+

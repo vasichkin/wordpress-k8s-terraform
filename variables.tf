@@ -63,8 +63,16 @@ module "aws-ebs-csi-driver" {
   aws_region = "${var.aws_region}"
 }
 
+
+module "kube-prometheus-stack" {
+  source = "./modules/kube-prometheus-stack"
+  monitor-version = "72.6.2"
+}
+
+
 #module "loki-stack" {
 #  source = "./modules/loki-stack"
+#  monitor-version = "2.10.2"
 #  monitor-version = "2.10.2"
 #}
 
