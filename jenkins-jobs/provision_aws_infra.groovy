@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout External Repo') {
+        stage('Checkout') {
             steps {
                 git url: 'https://github.com/vasichkin/kubernetes-terraform-ansible.git',
                     branch: 'master'
@@ -49,10 +49,9 @@ pipeline {
 
     post {
         success {
-            echo '✅ Infrastructure provisioned successfully! SSH key:\n------------------------\n'
+            echo '✅ Infrastructure provisioned successfully! User: ubuntu, SSH key:\n------------------------\n'
             sh 'cat ~/.ssh/id_rsa'
-            echo '\n------------------------\nHOSTS provisioned:'
-            sh 'dynamic_inventory.py --list'
+            echo '\n------------------------'
         }
         failure {
             echo '❌ Failed to provision infrastructure.'

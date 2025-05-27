@@ -6,7 +6,7 @@ pipeline {
     }
 
     stages {
-        stage('Checkout External Repo') {
+        stage('Checkout') {
             steps {
                 git url: 'https://github.com/vasichkin/kubernetes-terraform-ansible.git',
                     branch: 'master'
