@@ -1,0 +1,17 @@
+namespace            = "wordpress"
+# TODO: sscript this
+wordpress_domain_name = "ec2-13-49-145-25.eu-north-1.compute.amazonaws.com"
+wordpress_storage    = 10
+wordpress_host_path  = "/home/ubuntu/wordpress-data"
+wordpress_image      = "wordpress:php8.4-fpm"
+mysql_storage        = 5
+mysql_host_path      = "/home/ubuntu/wordpress-mysql"
+mysql_image          = "mysql:5.7"
+mysql_root_password  = "bXlwYXNzd29yZAo=" # BASE64 encodded
+aws_region           = "eu-north-1"
+aws_region_zone      = "eu-north-1b"
+aws_tags             = {
+  Owner    = ${OWNER}
+  Project  = "capstone"
+  Function = "wordpress"
+}
