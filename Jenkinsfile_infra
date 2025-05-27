@@ -6,10 +6,29 @@ pipeline {
     }
 
     stages {
-        stage('Checkout Code') {
+        stage('Checkout External Repo') {
             steps {
-                checkout scm
+                git url: 'https://github.com/vasichkin/kubernetes-terraform-ansible.git',
+                    branch: 'master'
             }
+        }
+
+        stage('Prepare tfvars') {
+          steps {
+            dir('terraform-infra') {
+              withCredentials([usernamePassword(credentialsId: 'aws_creds', usernameVariable: 'AWS_ACCESS_KEY', passwordVariable: 'AWS_SECRET_KEY')]) {
+                script {
+                  def exampleContent = readFile('tfvars.example')
+                  def tfvarsContent = exampleContent
+                    .replaceAll(/AWS_ACCESS_KEY/, env.AWS_ACCESS_KEY)
+                    .replaceAll(/AWS_SECRET_KEY/, env.AWS_SECRET_KEY)
+                    .replaceAll(/OWNER}/, env.OWNER)
+
+                  writeFile file: 'terraform.tfvars', text: tfvarsContent
+                }
+              }
+            }
+          }
         }
 
         stage('Provision Infrastructure') {
@@ -17,14 +36,11 @@ pipeline {
                 dir("${TF_DIR}") {
                     withCredentials([usernamePassword(credentialsId: 'aws_creds', usernameVariable: 'AWS_ACCESS_KEY', passwordVariable: 'AWS_SECRET_KEY')]) {
                         sh '''
-                            echo "Copying tfvars..."
-                            cp -f tfvars.example terraform.tfvars
-
                             echo "Initializing Terraform..."
                             terraform init
 
                             echo "Applying Terraform..."
-                            terraform apply -auto-approve
+                            terraform apply -auto-approve -no-color
                         '''
                     }
                 }
