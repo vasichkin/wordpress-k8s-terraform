@@ -45,13 +45,19 @@ pipeline {
                 }
             }
         }
+        stage('Info') {
+            steps {
+                echo 'User: ubuntu\nSSH key:\n------------------------\n'
+                sh 'cat ~/.ssh/id_rsa'
+                echo '\n------------------------\n'
+                sh 'dynamic_inventory.py --show-endpoints'
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Infrastructure provisioned successfully! User: ubuntu, SSH key:\n------------------------\n'
-            sh 'cat ~/.ssh/id_rsa'
-            echo '\n------------------------'
+            echo '✅ Infrastructure provisioned successfully!'
         }
         failure {
             echo '❌ Failed to provision infrastructure.'
