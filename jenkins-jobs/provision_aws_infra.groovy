@@ -50,7 +50,7 @@ pipeline {
                 echo 'User: ubuntu\nSSH key:\n------------------------\n'
                 sh 'cat ~/.ssh/id_rsa'
                 echo '\n------------------------\n'
-                sh 'dynamic_inventory.py --show-endpoints'
+                sh './dynamic_inventory.py --show-endpoints'
             }
         }
     }
