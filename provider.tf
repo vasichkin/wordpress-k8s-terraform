@@ -4,6 +4,12 @@ terraform {
       source = "hashicorp/kubernetes"
     }
   }
+  backend "s3" {
+    bucket    = "capstone-terraform-state"
+    key       = "terraform/kuber-wordpress-state"
+    region    = "eu-north-1"
+    use_lockfile = true
+  }
 }
 
 provider "kubernetes" {
