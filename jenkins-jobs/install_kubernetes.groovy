@@ -19,6 +19,7 @@ pipeline {
         }
         stage('Save creds') {
             steps {
+                sh './dynamic_inventory.py --show-endpoints > kubeconfigs/endpoints.txt'
                 archiveArtifacts artifacts: 'kubeconfigs/config', followSymlinks: false
             }
         }
@@ -27,7 +28,7 @@ pipeline {
                 echo 'SSH key:\n------------------------\n'
                 sh 'cat ~/.ssh/id_rsa'
                 echo '\n------------------------\n'
-                sh './dynamic_inventory.py --show-endpoints'
+                sh 'cat kubeconfigs/endpoints.txt'
             }
         }
     }

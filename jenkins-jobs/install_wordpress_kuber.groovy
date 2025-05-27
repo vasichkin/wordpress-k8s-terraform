@@ -6,18 +6,15 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/vasichkin/kubernetes-terraform-ansible.git',
+                git url: 'https://github.com/vasichkin/wordpress-k8s-terraform.git',
                     branch: 'master'
             }
         }
 
         stage('Get kuber creds') {
           steps {
-
             copyArtifacts fingerprintArtifacts: true,
-                projectName: "2-install-kubernetes",
-                target: "kubeconfigs/"
-
+                projectName: "2-install-kubernetes"
           }
         }
 
@@ -32,12 +29,19 @@ pipeline {
                 '''
             }
         }
+        stage('Info') {
+            steps {
+                echo 'SSH key:\n------------------------\n'
+                sh 'cat ~/.ssh/id_rsa'
+                echo '\n------------------------\n'
+                sh 'cat kubeconfigs/endpoints.txt'
+            }
+        }
     }
 
     post {
         success {
             echo '✅ Wordpress installed successfully!'
-            //sh 'dynamic_inventory.py --describe'
         }
         failure {
             echo '❌ Failed to provision infrastructure.'
