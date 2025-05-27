@@ -17,8 +17,10 @@ pipeline {
                     '''
             }
         }
-        stage('Creds') {
-            archiveArtifacts artifacts: 'kubeconfigs/config', followSymlinks: false
+        stage('Save creds') {
+            steps {
+                archiveArtifacts artifacts: 'kubeconfigs/config', followSymlinks: false
+            }
         }
     }
 
