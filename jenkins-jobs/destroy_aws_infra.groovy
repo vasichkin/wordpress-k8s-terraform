@@ -22,7 +22,7 @@ pipeline {
                   def tfvarsContent = exampleContent
                     .replaceAll(/AWS_ACCESS_KEY/, env.AWS_ACCESS_KEY)
                     .replaceAll(/AWS_SECRET_KEY/, env.AWS_SECRET_KEY)
-                    .replaceAll(/OWNER}/, env.OWNER)
+                    .replaceAll(/OWNER/, env.OWNER)
 
                   writeFile file: 'terraform.tfvars', text: tfvarsContent
                 }
@@ -34,15 +34,13 @@ pipeline {
         stage('Provision Infrastructure') {
             steps {
                 dir("${TF_DIR}") {
-                    withCredentials([usernamePassword(credentialsId: 'aws_creds', usernameVariable: 'AWS_ACCESS_KEY', passwordVariable: 'AWS_SECRET_KEY')]) {
-                        sh '''
-                            echo "Initializing Terraform..."
-                            terraform init
+                    sh '''
+                        echo "Initializing Terraform..."
+                        terraform init
 
-                            echo "Applying Terraform..."
-                            terraform apply -auto-approve -no-color
-                        '''
-                    }
+                        echo "Applying Terraform..."
+                        terraform destroy -auto-approve -no-color
+                    '''
                 }
             }
         }
@@ -50,10 +48,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Infrastructure provisioned successfully!'
+            echo '✅ Infrastructure destroyed successfully! '
         }
         failure {
-            echo '❌ Failed to provision infrastructure.'
+            echo '❌ Failed to destroy infrastructure.'
         }
     }
 }
