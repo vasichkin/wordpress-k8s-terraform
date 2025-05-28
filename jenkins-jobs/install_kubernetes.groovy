@@ -20,7 +20,7 @@ pipeline {
         stage('Save creds') {
             steps {
                 sh './dynamic_inventory.py --show-endpoints > kubeconfigs/endpoints.txt'
-                archiveArtifacts artifacts: 'kubeconfigs/config', followSymlinks: false
+                archiveArtifacts artifacts: 'kubeconfigs/*', followSymlinks: false
             }
         }
         stage('Info') {
