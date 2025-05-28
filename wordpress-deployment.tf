@@ -21,7 +21,7 @@ resource "kubernetes_config_map" "php_fpm_config" {
       [www]
       user = www-data
       group = www-data
-      listen = 127.0.0.1:9000
+      listen = 0.0.0.0:9000
       pm = dynamic
       pm.status_path = /status
       pm.max_children = 5
@@ -41,28 +41,27 @@ resource "kubernetes_config_map" "nginx_config" {
   data = {
     "default.conf" = <<-EOT
       server {
-          listen 80;
-          root /var/www/html;
-          index index.php index.html;
+        listen 80 default_server;
+        root /var/www/html;
+        server_name  _;
+        index index.php;
+        location / {
+            try_files $uri $uri/ /index.php?$args;
+        }
 
-          location / {
-              try_files \$uri \$uri/ /index.php?\$args;
-          }
-
-          location ~ \.php\$ {
-              include fastcgi_params;
-              fastcgi_pass 127.0.0.1:9000;
-              fastcgi_index index.php;
-              fastcgi_param SCRIPT_FILENAME /var/www/html\$fastcgi_script_name;
-          }
-
-          location ~ /\.ht {
-              deny all;
-          }
+        location ~ \.php$ {
+            fastcgi_split_path_info ^(.+\.php)(/.+)$;
+            fastcgi_pass 127.0.0.1:9000;
+            fastcgi_index index.php;
+            include fastcgi_params;
+            fastcgi_param   PATH_INFO       $fastcgi_path_info;
+            fastcgi_param   SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        }
       }
     EOT
   }
 }
+
 
 resource "kubernetes_deployment" "wordpress" {
   metadata {
@@ -225,6 +224,11 @@ resource "kubernetes_service" "wordpress_service" {
       port        = 80
       target_port = "http"
       node_port   = 30080
+    }
+    port {
+      name        = "fpm"
+      port        = 9000
+      target_port = 9000
     }
   }
 }
