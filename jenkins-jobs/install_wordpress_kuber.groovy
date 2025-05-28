@@ -18,6 +18,19 @@ pipeline {
           }
         }
 
+        stage('Prepare tfvars') {
+          steps {
+            withCredentials([usernamePassword(credentialsId: 'aws_creds', usernameVariable: 'AWS_ACCESS_KEY', passwordVariable: 'AWS_SECRET_KEY')]) {
+              script {
+                // Rewrite this dirty hack
+                def exampleContent = readFile('tfvars.example')
+                def tfvarsContent = exampleContent
+                  .replaceAll(/OWNER/, env.OWNER)
+                writeFile file: 'terraform.tfvars', text: tfvarsContent
+              }
+            }
+          }
+        }
         stage('Provision Infrastructure') {
             steps {
                 sh '''
