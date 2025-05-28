@@ -11,7 +11,7 @@ mysql_root_password  = "bXlwYXNzd29yZAo=" # BASE64 encodded
 aws_region           = "eu-north-1"
 aws_region_zone      = "eu-north-1b"
 aws_tags             = {
-  Owner    = OWNER
+  Owner    = "OWNER"
   Project  = "capstone"
   Function = "wordpress"
 }
