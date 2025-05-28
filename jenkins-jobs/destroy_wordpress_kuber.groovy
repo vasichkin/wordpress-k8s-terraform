@@ -38,26 +38,18 @@ pipeline {
                     terraform init
 
                     echo "Applying Terraform..."
-                    terraform apply -auto-approve -no-color
+                    terraform destroy -auto-approve -no-color
                 '''
-            }
-        }
-        stage('Info') {
-            steps {
-                echo 'SSH key:\n------------------------\n'
-                sh 'cat ~/.ssh/id_rsa'
-                echo '\n------------------------\n'
-                sh 'cat kubeconfigs/endpoints.txt'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Wordpress installed successfully!'
+            echo '✅ Wordpress destroyed successfully!'
         }
         failure {
-            echo '❌ Failed to provision Wordpress.'
+            echo '❌ Failed to destroy Wordpress.'
         }
     }
 }
