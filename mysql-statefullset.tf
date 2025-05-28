@@ -1,5 +1,4 @@
 resource "kubernetes_secret" "mysql_secret" {
-  depends_on = [kubernetes_namespace.wordpress-namespace]
   metadata {
     name      = "mysql-secret"
     namespace = var.namespace
@@ -13,7 +12,7 @@ resource "kubernetes_secret" "mysql_secret" {
 
 
 resource "kubernetes_stateful_set" "mysql" {
-  depends_on = [kubernetes_namespace.wordpress-namespace, kubernetes_secret.mysql_secret]
+  depends_on = [kubernetes_secret.mysql_secret]
   metadata {
     name      = "mysql"
     namespace = var.namespace
